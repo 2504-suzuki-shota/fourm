@@ -56,7 +56,7 @@ public class ForumController {
         return mav;
     }
     /*
-     * 新規投稿処理
+     * 新規投稿の登録
      */
     @PostMapping("/add")
     public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
@@ -100,8 +100,8 @@ public class ForumController {
     @PutMapping("/update/{id}")
     public ModelAndView updateContent (@PathVariable Integer id,
                                        @ModelAttribute("formModel") ReportForm report) {
-        // UrlParameterのidを更新するentityにセット
-        report.setId(id);
+        // UrlParameterのidを更新するformにセット→なくてもいける
+        //report.setId(id);
         // 編集した投稿を更新
         reportService.saveReport(report);
         // rootへリダイレクト
@@ -112,13 +112,15 @@ public class ForumController {
      * 返信の登録処理
      */
     @PostMapping("/comment/{id}")
-    //@PathVariable Integer idはcontent_id
+    //@PathVariable Integer idはcontent_id → ちなみにこのidは下に書いたcommentにidでセットされる
     //@ModelAttributeのおかげでcommentにtextはセット済み
-    public ModelAndView commentInsert (@PathVariable Integer id,
-                                       @ModelAttribute("commentModel") CommentForm comment) {
+    public ModelAndView addText (@PathVariable Integer id,
+                                 @ModelAttribute("commentModel") CommentForm comment) {
         //commentに@PathVariableで持ってきたidをcontentIdとしてセット
         comment.setContentId(id);
-        //commentに入った2つを登録したいので運ぶ
+        //(返信の編集時に必要)@PathVariableで持ってきたidが勝手にcommentのidにセットされてしまうのでリセットする
+        comment.setId(0);
+        //commentに入ったtextとcontentIdを登録したいので運ぶ
         commentService.saveComment(comment);
         //返信の登録は終わったので、表示はお任せします
         return new ModelAndView("redirect:/");
@@ -128,7 +130,7 @@ public class ForumController {
      * 返信削除処理
      */
     @DeleteMapping("/commentDelete/{id}")
-    public ModelAndView deleteReply(@PathVariable Integer id) {
+    public ModelAndView deleteText(@PathVariable Integer id) {
         // テーブルから削除する投稿を特定できるidを運ぶ
         commentService.deleteComment(id);
         // rootへリダイレクト
@@ -139,15 +141,31 @@ public class ForumController {
      * 返信の編集画面表示処理
      */
     @GetMapping("/commentEdit/{id}")
-    public ModelAndView editReply(@PathVariable Integer id) {
+    public ModelAndView editText(@PathVariable Integer id) {
         ModelAndView mav = new ModelAndView();
         // 編集する返信を取得
         CommentForm comment = commentService.editComment(id);
         // 編集する返信をセット
         mav.addObject("formModel", comment);
         // 画面遷移先を指定
-        mav.setViewName("/edit");
+        mav.setViewName("/commentEdit");
         return mav;
+    }
+
+    /*
+     * 返信の編集処理
+     */
+    @PutMapping("/commentUpdate/{id}")
+    //今回は返信用テーブルの主キーのid → ちなみにこのidは下に書いたcommentにidでセットされる
+    //@ModelAttributeのおかげでcommentにtextはセット済み
+    public ModelAndView updateText (@PathVariable Integer id,
+                                    @ModelAttribute("formModel") CommentForm comment) {
+        // UrlParameterのidを更新するformにセット→なくてもいける
+        //comment.setId(id);
+        // 編集した投稿を更新
+        commentService.saveComment(comment);
+        // rootへリダイレクト
+        return new ModelAndView("redirect:/");
     }
 
 

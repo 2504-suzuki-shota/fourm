@@ -43,7 +43,7 @@ public class CommentService {
     }
 
     /*
-     * 返信の追加
+     * 返信の追加、更新
      */
     public void saveComment(CommentForm reqComment) {
         //saveメソッドの引数はEntity型だからCommentForm型をComment型に変換できるメソッドに飛ばす
@@ -57,6 +57,10 @@ public class CommentService {
      */
     private Comment setCommentEntity(CommentForm reqComment) {
         Comment comment = new Comment();
+        //編集の時はidを指定しないと返信対象のレコードを特定できない→0の時はSERIALだから自動採番(登録できる)
+        if(reqComment.getId() != 0){
+            comment.setId(reqComment.getId());
+        }
         comment.setContentId(reqComment.getContentId());
         comment.setText(reqComment.getText());
         return comment;
