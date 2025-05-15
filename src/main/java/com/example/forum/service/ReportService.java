@@ -3,10 +3,13 @@ package com.example.forum.service;
 import com.example.forum.controller.form.ReportForm;
 import com.example.forum.repository.ReportRepository;
 import com.example.forum.repository.entity.Report;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -17,8 +20,28 @@ public class ReportService {
     /*
      * レコード全件取得処理
      */
-    public List<ReportForm> findAllReport() {
-        List<Report> results = reportRepository.findAllByOrderByIdDesc();
+    public List<ReportForm> findAllReport(Date startDate,Date goalDate) {
+//        String start = new SimpleDateFormat("yyyy-MM-dd").format(startDate);
+//        String goal = new SimpleDateFormat("yyyy-MM-dd").format(goalDate);
+//
+//        //開始日の指定がない時
+//        if(StringUtils.isBlank(start)) {
+//            //デフォルトstart（開始日時）
+//            start = "2020-01-01 00:00:00";
+//        } else {
+//            //入力された日付(日付変わった直後から)
+//            start += " 00:00:00";
+//        }
+//
+//        //終了日の指定がない時
+//        if(StringUtils.isBlank(goal)) {
+//            //デフォルトend（現在日時の取得）
+//            goal = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(new Date());
+//        } else {
+//            //入力された日付(日付変わる直前まで)
+//            goal += " 23:59:59";
+//        }
+        List<Report> results = reportRepository.findByCreatedDateBetween(startDate, goalDate);
         List<ReportForm> reports = setReportForm(results);
         return reports;
     }

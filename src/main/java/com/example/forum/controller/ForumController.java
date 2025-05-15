@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,17 +25,16 @@ public class ForumController {
      * 投稿内容表示処理
      */
     @GetMapping
-    public ModelAndView top() {
+    public ModelAndView top(@ModelAttribute("date") ReportForm date) {
         ModelAndView mav = new ModelAndView();
         // 返信欄用の空のformを準備
         CommentForm commentForm = new CommentForm();
         // 投稿を全件取得
-        List<ReportForm> contentData = reportService.findAllReport();
+        List<ReportForm> contentData = reportService.findAllReport(date.getStart(), date.getGoal());
         // 返信を全件取得
         List<CommentForm> replyData = commentService.findAllComment();
         // 画面遷移先を指定
         mav.setViewName("/top");
-        mav.addObject("commentModel", commentForm);
         // 投稿データオブジェクトを保管→viewに運ぶ
         mav.addObject("contents", contentData);
         // 返信データオブジェクトを保管→viewに運ぶ

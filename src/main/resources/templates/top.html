@@ -10,6 +10,15 @@
     <h1>匿名掲示板</h1>
 </div>
 <div class="main-contents">
+    <div class="date">
+        <form method="get" th:object="${date}" th:action="@{/{id}(id=${content.id})}">
+            日付
+            <input type ="date" th:field="*{start}">
+            ～
+            <input type ="date" th:field="*{goal}">
+            <input type ="submit" value ="絞込">
+        </form>
+    </div>
     <a href="/new">
         <button class="new-button" type="button">新規投稿</button>
     </a>
