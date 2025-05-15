@@ -8,8 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import java.util.Date;
-
 @Entity
 @Table(name = "report")
 @Getter
@@ -22,10 +20,4 @@ public class Report {
 
     @Column
     private String content;
-
-    @Column
-    private Date createdDate;
-
-    @Column
-    private Date updatedDate;
 }

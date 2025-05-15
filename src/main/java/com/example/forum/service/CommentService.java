@@ -1,10 +1,8 @@
 package com.example.forum.service;
 
 import com.example.forum.controller.form.CommentForm;
-import com.example.forum.controller.form.ReportForm;
 import com.example.forum.repository.CommentRepository;
 import com.example.forum.repository.entity.Comment;
-import com.example.forum.repository.entity.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
