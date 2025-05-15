@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <link th:href="@{/css/style.css}" rel="styleSheet">
@@ -30,12 +30,8 @@
                 <input type="button" value="投稿の編集">
             </a>
         </div>
-
-
-
-
         <div class="comment">
-            <div class="comment-display" th:each="reply : ${replies}" th:if=”${content.id}==${reply.contentId}”>
+            <div class="comment-display" th:each="reply : ${replies}" th:if="${reply.contentId == content.id}">
                 <div>
                     返信ID : <span th:text="${reply.id}"/>
                 </div>
@@ -43,20 +39,20 @@
                     返信 : <span th:text="${reply.text}"/>
                 </div>
                 <div class="comment-delete-button">
-                    <form th:action="@{/delete/{id}(id=${reply.id})}" th:method="delete">
+                    <form th:action="@{/commentDelete/{id}(id=${reply.id})}" th:method="delete">
                         <input type="submit" value="返信の削除">
                     </form>
                 </div>
                 <div class="comment-edit-button">
-                    <a th:href="@{/edit/{id}(id=${reply.id})}">
+                    <a th:href="@{/commentEdit/{id}(id=${reply.id})}">
                         <input type="button" value="返信の編集">
                     </a>
                 </div>
             </div>
-            <!--返信の一覧表示のための繰り返し終わり-->
-
+            <!--返信の一覧表示の繰り返し終わり-->
             <div class="comment-insert">
-                <form th:action="@{/comment/{id}(id=${content.id})}" th:method="post" th:object="${commentForm}">
+                <!-- action先に飛ぶのは返信ボタンを押してから→トップ画面時はactionしない→ -->
+                <form th:action="@{/comment/{id}(id=${content.id})}" method="post" th:object="${commentModel}">
                     <div class="form-area">
                         <textarea class="tweet-box" th:field="*{text}" size="20" maxlength="200" /></textarea><br/>
                         <input type="submit" value="返信" />
@@ -65,6 +61,7 @@
             </div>
         </div>
     </div>
+    <!--投稿の一覧表示の繰り返し終わり-->
 </div>
 </body>
 </html>

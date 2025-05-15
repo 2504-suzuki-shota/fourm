@@ -36,6 +36,14 @@ button {
     display:inline-block;
 }
 
+.comment-delete-button{
+    display:inline-block;
+}
+
+.comment-edit-button{
+    display:inline-block;
+}
+
 .profile {
 	margin-top: 10px;
 	margin-right: 10px;

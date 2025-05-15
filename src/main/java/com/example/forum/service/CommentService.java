@@ -1,8 +1,10 @@
 package com.example.forum.service;
 
 import com.example.forum.controller.form.CommentForm;
+import com.example.forum.controller.form.ReportForm;
 import com.example.forum.repository.CommentRepository;
 import com.example.forum.repository.entity.Comment;
+import com.example.forum.repository.entity.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,5 +60,24 @@ public class CommentService {
         comment.setContentId(reqComment.getContentId());
         comment.setText(reqComment.getText());
         return comment;
+    }
+
+    /*
+     * 返信の削除
+     */
+    public void deleteComment(Integer id) {
+        //deleteByIdはJpaRepositoryに搭載済みだから良しなにやってくれる
+        commentRepository.deleteById(id);
+    }
+
+    /*
+     * 返信の編集対象のレコード1件取得
+     */
+    public CommentForm editComment(Integer id) {
+        List<Comment> results = new ArrayList<>();
+        Comment comment = (Comment) commentRepository.findById(id).orElse(null);
+        results.add(comment);
+        List<CommentForm> comments = setCommentForm(results);
+        return comments.get(0);
     }
 }

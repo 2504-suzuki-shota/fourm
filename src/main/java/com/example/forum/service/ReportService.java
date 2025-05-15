@@ -71,7 +71,7 @@ public class ReportService {
     }
 
     /*
-     * レコード1件取得
+     * 編集対象のレコード1件取得
      */
     public ReportForm editReport(Integer id) {
         List<Report> results = new ArrayList<>();

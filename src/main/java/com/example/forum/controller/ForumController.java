@@ -26,12 +26,15 @@ public class ForumController {
     @GetMapping
     public ModelAndView top() {
         ModelAndView mav = new ModelAndView();
+        // 返信欄用の空のformを準備
+        CommentForm commentForm = new CommentForm();
         // 投稿を全件取得
         List<ReportForm> contentData = reportService.findAllReport();
         // 返信を全件取得
         List<CommentForm> replyData = commentService.findAllComment();
         // 画面遷移先を指定
         mav.setViewName("/top");
+        mav.addObject("commentModel", commentForm);
         // 投稿データオブジェクトを保管→viewに運ぶ
         mav.addObject("contents", contentData);
         // 返信データオブジェクトを保管→viewに運ぶ
@@ -44,7 +47,7 @@ public class ForumController {
     @GetMapping("/new")
     public ModelAndView newContent() {
         ModelAndView mav = new ModelAndView();
-        // form用の空のentityを準備
+        // form用の空のformを準備
         ReportForm reportForm = new ReportForm();
         // 画面遷移先を指定
         mav.setViewName("/new");
@@ -57,7 +60,7 @@ public class ForumController {
      */
     @PostMapping("/add")
     public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
-        // 投稿をテーブルに格納
+        // 投稿をテーブルに登録したい
         reportService.saveReport(reportForm);
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
@@ -112,7 +115,7 @@ public class ForumController {
     //@PathVariable Integer idはcontent_id
     //@ModelAttributeのおかげでcommentにtextはセット済み
     public ModelAndView commentInsert (@PathVariable Integer id,
-                                       @ModelAttribute("commentForm") CommentForm comment) {
+                                       @ModelAttribute("commentModel") CommentForm comment) {
         //commentに@PathVariableで持ってきたidをcontentIdとしてセット
         comment.setContentId(id);
         //commentに入った2つを登録したいので運ぶ
@@ -120,4 +123,33 @@ public class ForumController {
         //返信の登録は終わったので、表示はお任せします
         return new ModelAndView("redirect:/");
     }
+
+    /*
+     * 返信削除処理
+     */
+    @DeleteMapping("/commentDelete/{id}")
+    public ModelAndView deleteReply(@PathVariable Integer id) {
+        // テーブルから削除する投稿を特定できるidを運ぶ
+        commentService.deleteComment(id);
+        // rootへリダイレクト
+        return new ModelAndView("redirect:/");
+    }
+
+    /*
+     * 返信の編集画面表示処理
+     */
+    @GetMapping("/commentEdit/{id}")
+    public ModelAndView editReply(@PathVariable Integer id) {
+        ModelAndView mav = new ModelAndView();
+        // 編集する返信を取得
+        CommentForm comment = commentService.editComment(id);
+        // 編集する返信をセット
+        mav.addObject("formModel", comment);
+        // 画面遷移先を指定
+        mav.setViewName("/edit");
+        return mav;
+    }
+
+
+
 }
