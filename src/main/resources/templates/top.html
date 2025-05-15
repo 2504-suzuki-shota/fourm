@@ -11,7 +11,7 @@
 </div>
 <div class="main-contents">
     <div class="date">
-        <form method="get" th:object="${date}" th:action="@{/{id}(id=${content.id})}">
+        <form th:action="@{/}" method="get" th:object="${date}">
             日付
             <input type ="date" th:field="*{start}">
             ～
