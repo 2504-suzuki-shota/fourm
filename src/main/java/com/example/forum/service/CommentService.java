@@ -61,6 +61,8 @@ public class CommentService {
         }
         comment.setContentId(reqComment.getContentId());
         comment.setText(reqComment.getText());
+        comment.setCreatedDate(reqComment.getCreatedDate());
+        comment.setUpdatedDate(reqComment.getUpdatedDate());
         return comment;
     }
 

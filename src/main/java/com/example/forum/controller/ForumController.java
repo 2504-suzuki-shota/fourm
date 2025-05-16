@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +65,9 @@ public class ForumController {
      */
     @PostMapping("/add")
     public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
+        //時間のセット
+        reportForm.setCreatedDate(new Date());
+        reportForm.setUpdatedDate(new Date());
         // 投稿をテーブルに登録したい
         reportService.saveReport(reportForm);
         // rootへリダイレクト
@@ -124,6 +128,9 @@ public class ForumController {
         comment.setContentId(id);
         //(返信の編集時に必要)@PathVariableで持ってきたidが勝手にcommentのidにセットされてしまうのでリセットする
         comment.setId(0);
+        //時間のセット
+        comment.setCreatedDate(new Date());
+        comment.setUpdatedDate(new Date());
         //commentに入ったtextとcontentIdを登録したいので運ぶ
         commentService.saveComment(comment);
         //返信の登録は終わったので、表示はお任せします

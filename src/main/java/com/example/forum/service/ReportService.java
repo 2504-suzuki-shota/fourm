@@ -73,7 +73,7 @@ public class ReportService {
      * レコード追加
      */
     public void saveReport(ReportForm reqReport) {
-        //saveメソッドの引数はEntity型だからReportForm型をreport型に変換できるメソッドに飛ばす
+        //saveメソッドの引数はEntityパケだからReportForm型をreport型に変換できるメソッドに飛ばす
         Report saveReport = setReportEntity(reqReport);
         //saveメソッドは登録と更新を自動で分けてくれる
         Report insert = reportRepository.save(saveReport);
@@ -89,6 +89,8 @@ public class ReportService {
         Report report = new Report();
         report.setId(reqReport.getId());
         report.setContent(reqReport.getContent());
+        report.setCreatedDate(reqReport.getCreatedDate());
+        report.setUpdatedDate(reqReport.getUpdatedDate());
         return report;
     }
 
