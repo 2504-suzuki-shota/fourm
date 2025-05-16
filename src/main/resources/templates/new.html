@@ -11,8 +11,13 @@
 </div>
 <div class="main-contents">
   <form method="post" action="/add" th:object="${formModel}">
+
+    <div class="error-message" th:if="${errorMessage neq null}">
+      <p th:text="${errorMessage}"></p>
+    </div>
+
     <div class="form-area">
-      <label>投稿内容</label>
+      <label>投稿内容</label></br>
       <textarea class="tweet-box" th:field="*{content}" size="20" maxlength="200" /></textarea><br/>
       <input type="submit" value="投稿" />
     </div>

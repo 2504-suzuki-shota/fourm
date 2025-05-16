@@ -8,7 +8,10 @@ import java.util.Date;
 public class ReportForm {
 
     private int id;
+
+    @NotBlank
     private String content;
+
     private Date createdDate;
     private Date updatedDate;
     private String start;

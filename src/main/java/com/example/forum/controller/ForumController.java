@@ -7,6 +7,7 @@ import com.example.forum.service.CommentService;
 import com.example.forum.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -64,7 +65,16 @@ public class ForumController {
      * 新規投稿の登録
      */
     @PostMapping("/add")
-    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
+    public ModelAndView addContent(@Valid @ModelAttribute("formModel") ReportForm reportForm, BindingResult result){
+
+        //バリデーション①
+        if (result.hasErrors()) {
+            ModelAndView mav = new ModelAndView();
+            mav.setViewName("/new");
+            mav.addObject("errorMessage", "投稿内容を入力してください");
+            return mav;
+        }
+
         //今の時間をセット
         reportForm.setCreatedDate(new Date());
         reportForm.setUpdatedDate(reportForm.getCreatedDate());

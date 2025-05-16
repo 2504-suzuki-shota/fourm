@@ -47,7 +47,8 @@ public class ReportService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        List<Report> Results = reportRepository.findByCreatedDateBetween(startDate,endDate);
+        //
+        List<Report> Results = reportRepository.findByCreatedDateBetweenOrderByUpdatedDateDesc(startDate,endDate);
         List<ReportForm> reports = setReportForm(Results);
         return reports;
     }
