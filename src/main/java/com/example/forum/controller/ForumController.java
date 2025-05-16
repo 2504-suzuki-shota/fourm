@@ -24,20 +24,24 @@ public class ForumController {
      * 投稿内容表示処理
      */
     @GetMapping
-    public ModelAndView top() {
+    public ModelAndView top(@ModelAttribute("date") ReportForm date) {
         ModelAndView mav = new ModelAndView();
         // 返信欄用の空のformを準備
         CommentForm commentForm = new CommentForm();
         // 投稿を全件取得
-        List<ReportForm> contentData = reportService.findAllReport();
+        List<ReportForm> contentData = reportService.findAllReport(date.getStart(), date.getEnd());
         // 返信を全件取得
         List<CommentForm> replyData = commentService.findAllComment();
         // 画面遷移先を指定
         mav.setViewName("/top");
+        //以下は全部表示させたい
+        // 日付の入ったオブジェクトをviewに運ぶ
+        mav.addObject("date", date);
+        // 空の返信欄のオブジェクトをviewに運ぶ
         mav.addObject("commentModel", commentForm);
-        // 投稿データオブジェクトを保管→viewに運ぶ
+        // 投稿データオブジェクトをviewに運ぶ
         mav.addObject("contents", contentData);
-        // 返信データオブジェクトを保管→viewに運ぶ
+        // 返信データオブジェクトをviewに運ぶ
         mav.addObject("replies", replyData);
         return mav;
     }
