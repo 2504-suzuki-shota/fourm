@@ -14,6 +14,7 @@
     <div class="form-area">
       <label>投稿内容</label></br>
       <textarea class="tweet-box" name="content" th:field="*{content}" size="20" maxlength="200" /></textarea><br/>
+      <input type="hidden" th:field="*{stringCreatedDate}">
       <input type="submit" value="更新"/>
     </div>
   </form>

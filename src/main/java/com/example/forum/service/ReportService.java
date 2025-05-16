@@ -64,6 +64,11 @@ public class ReportService {
             Report result = results.get(i);
             report.setId(result.getId());
             report.setContent(result.getContent());
+            report.setCreatedDate(result.getCreatedDate());
+            report.setUpdatedDate(result.getUpdatedDate());
+            //時間をDate→String型に変えたverもセットしとく
+            report.setStringCreatedDate(new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(report.getCreatedDate()));
+            report.setStringUpdatedDate(new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(report.getUpdatedDate()));
             reports.add(report);
         }
         return reports;
@@ -89,8 +94,20 @@ public class ReportService {
         Report report = new Report();
         report.setId(reqReport.getId());
         report.setContent(reqReport.getContent());
-        report.setCreatedDate(reqReport.getCreatedDate());
         report.setUpdatedDate(reqReport.getUpdatedDate());
+        if(StringUtils.isBlank(reqReport.getStringCreatedDate())) {
+            //登録の時
+            report.setCreatedDate(reqReport.getCreatedDate());
+        } else {
+            //更新の時
+            try {
+                //stringCreatedDateをcreatedDate（String→Dateに型変換）
+                Date createdDate = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").parse(reqReport.getStringCreatedDate());
+                report.setCreatedDate(createdDate);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return report;
     }
 

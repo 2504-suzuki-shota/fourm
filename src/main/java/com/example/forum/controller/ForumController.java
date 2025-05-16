@@ -65,7 +65,7 @@ public class ForumController {
      */
     @PostMapping("/add")
     public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
-        //時間のセット
+        //今の時間をセット
         reportForm.setCreatedDate(new Date());
         reportForm.setUpdatedDate(new Date());
         // 投稿をテーブルに登録したい
@@ -108,8 +108,10 @@ public class ForumController {
     @PutMapping("/update/{id}")
     public ModelAndView updateContent (@PathVariable Integer id,
                                        @ModelAttribute("formModel") ReportForm report) {
-        // UrlParameterのidを更新するformにセット→なくてもいける
+        // UrlParameterのidを更新するformにセット→なくてもいける→@PathVariableで入っちゃってる
         //report.setId(id);
+        //UpdatedDateに今の時間をセット
+        report.setUpdatedDate(new Date());
         // 編集した投稿を更新
         reportService.saveReport(report);
         // rootへリダイレクト
@@ -128,7 +130,7 @@ public class ForumController {
         comment.setContentId(id);
         //(返信の編集時に必要)@PathVariableで持ってきたidが勝手にcommentのidにセットされてしまうのでリセットする
         comment.setId(0);
-        //時間のセット
+        //今の時間をセット
         comment.setCreatedDate(new Date());
         comment.setUpdatedDate(new Date());
         //commentに入ったtextとcontentIdを登録したいので運ぶ
