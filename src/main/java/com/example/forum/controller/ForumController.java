@@ -67,7 +67,7 @@ public class ForumController {
     public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
         //今の時間をセット
         reportForm.setCreatedDate(new Date());
-        reportForm.setUpdatedDate(new Date());
+        reportForm.setUpdatedDate(reportForm.getCreatedDate());
         // 投稿をテーブルに登録したい
         reportService.saveReport(reportForm);
         // rootへリダイレクト
@@ -122,7 +122,7 @@ public class ForumController {
      * 返信の登録処理
      */
     @PostMapping("/comment/{id}")
-    //@PathVariable Integer idはcontent_id → ちなみにこのidは下に書いたcommentにidでセットされる
+    //@PathVariable Integer idは元投稿のid → ちなみにこのidは下に書いたcommentにidでセットされる
     //@ModelAttributeのおかげでcommentにtextはセット済み
     public ModelAndView addText (@PathVariable Integer id,
                                  @ModelAttribute("commentModel") CommentForm comment) {
@@ -132,9 +132,12 @@ public class ForumController {
         comment.setId(0);
         //今の時間をセット
         comment.setCreatedDate(new Date());
-        comment.setUpdatedDate(new Date());
-        //commentに入ったtextとcontentIdを登録したいので運ぶ
+        comment.setUpdatedDate(comment.getCreatedDate());
+        //commentに入ったもの全てを登録したいので運ぶ
         commentService.saveComment(comment);
+
+        //返信が追加されたら元投稿のupdateDataも更新する→変更箇所は変更して全部持って再度全部更新し直す
+        reportService.updateUpdatedData(id, comment.getCreatedDate());
         //返信の登録は終わったので、表示はお任せします
         return new ModelAndView("redirect:/");
     }

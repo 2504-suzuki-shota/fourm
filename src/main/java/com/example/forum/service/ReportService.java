@@ -30,7 +30,6 @@ public class ReportService {
             //入力された日付(日付変わった直後から)
             start += " 00:00:00";
         }
-
         //終了日の指定がない時
         if(StringUtils.isBlank(end)) {
             //入力なし→デフォルトend（現在日時の取得）
@@ -45,12 +44,12 @@ public class ReportService {
             //String→Dateに型変換
             startDate = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").parse(start);
             endDate = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").parse(end);
-            List<Report> results = reportRepository.findByCreatedDateBetween(startDate,endDate);
-            List<ReportForm> reports = setReportForm(results);
-            return reports;
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+        List<Report> Results = reportRepository.findByCreatedDateBetween(startDate,endDate);
+        List<ReportForm> reports = setReportForm(Results);
+        return reports;
     }
 
     /*
@@ -123,10 +122,22 @@ public class ReportService {
      * 編集対象のレコード1件取得
      */
     public ReportForm editReport(Integer id) {
-        List<Report> results = new ArrayList<>();
         Report report = (Report) reportRepository.findById(id).orElse(null);
+        List<Report> results = new ArrayList<>();
         results.add(report);
         List<ReportForm> reports = setReportForm(results);
         return reports.get(0);
+    }
+
+    /*
+     * 編集対象のレコード1件取得
+     */
+    public void updateUpdatedData(Integer id, Date date) {
+        //updatedDataを更新したいレコードを取得する
+        Report fromDatabaseReport = (Report) reportRepository.findById(id).orElse(null);
+        //updatedDateのみ持ってきたdateに変更
+        fromDatabaseReport.setUpdatedDate(date);
+        //updatedDate以外はそのままでDBを更新
+        reportRepository.save(fromDatabaseReport);
     }
 }

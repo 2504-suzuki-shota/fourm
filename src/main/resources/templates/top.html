@@ -64,6 +64,8 @@
                 <form th:action="@{/comment/{id}(id=${content.id})}" method="post" th:object="${commentModel}">
                     <div class="form-area">
                         <textarea class="tweet-box" th:field="*{text}" size="20" maxlength="200" /></textarea><br/>
+                        <input type="hidden" th:field="${contents.content}"/>
+                        <input type="hidden" th:field="${contents.createdDate}"/>
                         <input type="submit" value="返信" />
                     </div>
                 </form>
