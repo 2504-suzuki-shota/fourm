@@ -2,9 +2,10 @@ package com.example.forum.controller;
 
 import com.example.forum.controller.form.CommentForm;
 import com.example.forum.controller.form.ReportForm;
-import com.example.forum.repository.entity.Comment;
 import com.example.forum.service.CommentService;
 import com.example.forum.service.ReportService;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,8 @@ public class ForumController {
     ReportService reportService;
     @Autowired
     CommentService commentService;
+    @Autowired
+    HttpSession session;
 
     /*
      * 投稿内容表示処理
@@ -28,6 +31,9 @@ public class ForumController {
     @GetMapping
     public ModelAndView top(@ModelAttribute("date") ReportForm date) {
         ModelAndView mav = new ModelAndView();
+        //バリデーション③用 Sessionを別の箱に移す
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        errorMethod(errorMessage, mav);
         // 返信欄用の空のformを準備
         CommentForm commentForm = new CommentForm();
         // 投稿を全件取得
@@ -53,28 +59,38 @@ public class ForumController {
     @GetMapping("/new")
     public ModelAndView newContent() {
         ModelAndView mav = new ModelAndView();
+        //バリデーション①用 Sessionを別の箱に移す
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        errorMethod(errorMessage, mav);
         // form用の空のformを準備
         ReportForm reportForm = new ReportForm();
-        // 画面遷移先を指定
+        // 画面遷移先を指定→("/?")は??.HTMLの??に対応してる
         mav.setViewName("/new");
         // 準備した空のFormを保管
         mav.addObject("formModel", reportForm);
         return mav;
     }
+
+    public void errorMethod(String errorMessage, ModelAndView mav){
+        if(errorMessage != null){
+            session.removeAttribute("errorMessage");
+            mav.addObject("errorMessage", errorMessage);
+        }
+    }
+
     /*
      * 新規投稿の登録
      */
     @PostMapping("/add")
     public ModelAndView addContent(@Valid @ModelAttribute("formModel") ReportForm reportForm, BindingResult result){
-
-        //バリデーション①
+        //バリデーション① contentが空の時
         if (result.hasErrors()) {
-            ModelAndView mav = new ModelAndView();
-            mav.setViewName("/new");
-            mav.addObject("errorMessage", "投稿内容を入力してください");
+            ModelAndView mav =new ModelAndView();
+            //sessionに入れる(mavのスコープはrequestと同じ)
+            session.setAttribute("errorMessage", "投稿内容を入力してください");
+            mav.setViewName("redirect:/new");
             return mav;
         }
-
         //今の時間をセット
         reportForm.setCreatedDate(new Date());
         reportForm.setUpdatedDate(reportForm.getCreatedDate());
@@ -103,23 +119,31 @@ public class ForumController {
     @GetMapping("/edit/{id}")
     public ModelAndView editContent(@PathVariable Integer id) {
         ModelAndView mav = new ModelAndView();
-        // 編集する投稿を取得
-        ReportForm report = reportService.editReport(id);
-        // 編集する投稿をセット
-        mav.addObject("formModel", report);
+        //バリデーション②用 Sessionを別の箱に移す
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        errorMethod(errorMessage, mav);
+            // 編集する投稿を取得
+            ReportForm report = reportService.editReport(id);
+            // 編集する投稿を表示するためにセット
+            mav.addObject("formModel", report);
         // 画面遷移先を指定
         mav.setViewName("/edit");
         return mav;
     }
 
     /*
-     * 編集処理
+     * 編集の登録
      */
     @PutMapping("/update/{id}")
     public ModelAndView updateContent (@PathVariable Integer id,
-                                       @ModelAttribute("formModel") ReportForm report) {
-        // UrlParameterのidを更新するformにセット→なくてもいける→@PathVariableで入っちゃってる
-        //report.setId(id);
+                                       @Valid @ModelAttribute("formModel") ReportForm report, BindingResult result) {
+        //バリデーション② contentが空の時
+        if (result.hasErrors()) {
+            ModelAndView mav = new ModelAndView();
+            session.setAttribute("errorMessage", "投稿内容を入力してください");
+            mav.setViewName("redirect:/edit/{id}");
+            return mav;
+        }
         //UpdatedDateに今の時間をセット
         report.setUpdatedDate(new Date());
         // 編集した投稿を更新
@@ -135,18 +159,26 @@ public class ForumController {
     //@PathVariable Integer idは元投稿のid → ちなみにこのidは下に書いたcommentにidでセットされる
     //@ModelAttributeのおかげでcommentにtextはセット済み
     public ModelAndView addText (@PathVariable Integer id,
-                                 @ModelAttribute("commentModel") CommentForm comment) {
+                                 @Valid @ModelAttribute("commentModel") CommentForm comment, BindingResult result) {
+
+        //バリデーション③ textが空の時
+        if (result.hasErrors()) {
+            ModelAndView mav = new ModelAndView();
+            mav.addObject("errorMessage", "コメントを入力してください");
+            mav.setViewName("redirect:/");
+            return mav;
+        }
+
         //commentに@PathVariableで持ってきたidをcontentIdとしてセット
         comment.setContentId(id);
-        //(返信の編集時に必要)@PathVariableで持ってきたidが勝手にcommentのidにセットされてしまうのでリセットする
+        //(返信の編集との差別化)@PathVariableで持ってきたidが勝手にcommentのidにセットされてしまうのでリセットする
         comment.setId(0);
         //今の時間をセット
         comment.setCreatedDate(new Date());
         comment.setUpdatedDate(comment.getCreatedDate());
         //commentに入ったもの全てを登録したいので運ぶ
         commentService.saveComment(comment);
-
-        //返信が追加されたら元投稿のupdateDataも更新する→変更箇所は変更して全部持って再度全部更新し直す
+        //(表示降順用処理)返信が追加されたら元投稿のupdateDataも更新する→変更箇所は変更して全部持って再度全部更新し直す
         reportService.updateUpdatedData(id, comment.getCreatedDate());
         //返信の登録は終わったので、表示はお任せします
         return new ModelAndView("redirect:/");
@@ -169,6 +201,9 @@ public class ForumController {
     @GetMapping("/commentEdit/{id}")
     public ModelAndView editText(@PathVariable Integer id) {
         ModelAndView mav = new ModelAndView();
+        //バリデーション④用 Sessionを別の箱に移す
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        errorMethod(errorMessage, mav);
         // 編集する返信を取得
         CommentForm comment = commentService.editComment(id);
         // 編集する返信をセット
@@ -182,12 +217,19 @@ public class ForumController {
      * 返信の編集処理
      */
     @PutMapping("/commentUpdate/{id}")
-    //今回は返信用テーブルの主キーのid → ちなみにこのidは下に書いたcommentにidでセットされる
     //@ModelAttributeのおかげでcommentにtextはセット済み
     public ModelAndView updateText (@PathVariable Integer id,
-                                    @ModelAttribute("formModel") CommentForm comment) {
-        // UrlParameterのidを更新するformにセット→なくてもいける
-        //comment.setId(id);
+                                    @Valid @ModelAttribute("formModel") CommentForm comment, BindingResult result) {
+        //バリデーション④ textが空の時
+        if (result.hasErrors()) {
+            ModelAndView mav = new ModelAndView();
+            mav.setViewName("/commentEdit/{id}");
+            mav.addObject("errorMessage", "コメントを入力してください");
+            return mav;
+        }
+
+        //UpdatedDateに今の時間をセット
+        comment.setUpdatedDate(new Date());
         // 編集した投稿を更新
         commentService.saveComment(comment);
         // rootへリダイレクト

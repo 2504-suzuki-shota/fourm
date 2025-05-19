@@ -11,11 +11,10 @@
 </div>
 <div class="main-contents">
   <form method="post" action="/add" th:object="${formModel}">
-
-    <div class="error-message" th:if="${errorMessage neq null}">
+    <!--  エラーメッセージある場合  -->
+    <div class="error-message" th:if="${errorMessage != null}">
       <p th:text="${errorMessage}"></p>
     </div>
-
     <div class="form-area">
       <label>投稿内容</label></br>
       <textarea class="tweet-box" th:field="*{content}" size="20" maxlength="200" /></textarea><br/>

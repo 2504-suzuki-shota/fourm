@@ -47,7 +47,12 @@ public class ReportService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        //
+        //①何したい？→取得
+        //findBy
+        //②範囲条件→日付指定
+        //CreatedDateBetween(Date startDate, Date endDate)
+        //③表示設定→更新日時で降順
+        //OrderByUpdatedDateDesc
         List<Report> Results = reportRepository.findByCreatedDateBetweenOrderByUpdatedDateDesc(startDate,endDate);
         List<ReportForm> reports = setReportForm(Results);
         return reports;
@@ -81,10 +86,7 @@ public class ReportService {
         //saveメソッドの引数はEntityパケだからReportForm型をreport型に変換できるメソッドに飛ばす
         Report saveReport = setReportEntity(reqReport);
         //saveメソッドは登録と更新を自動で分けてくれる
-        Report insert = reportRepository.save(saveReport);
-        //今回は使わないけどsaveメソッドの戻り値は登録した情報
-        //System.out.println(insert.getId());
-        //System.out.println(insert.getContent());
+        reportRepository.save(saveReport);
     }
 
     /*
@@ -99,7 +101,7 @@ public class ReportService {
             //登録の時
             report.setCreatedDate(reqReport.getCreatedDate());
         } else {
-            //更新の時
+            //編集の時
             try {
                 //stringCreatedDateをcreatedDate（String→Dateに型変換）
                 Date createdDate = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").parse(reqReport.getStringCreatedDate());
@@ -131,7 +133,7 @@ public class ReportService {
     }
 
     /*
-     * 編集対象のレコード1件取得
+     * 降順にするため、updatedDateのみ更新する
      */
     public void updateUpdatedData(Integer id, Date date) {
         //updatedDataを更新したいレコードを取得する

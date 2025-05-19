@@ -17,6 +17,10 @@
             ～
             <input type ="date" th:field="*{end}">
             <input type ="submit" value ="絞込">
+            <!--  エラーメッセージある場合  -->
+            <div class="error-message" th:if="${errorMessage != null}">
+                <p th:text="${errorMessage}"></p>
+            </div>
         </form>
     </div>
     <a href="/new">
