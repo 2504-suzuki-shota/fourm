@@ -31,9 +31,12 @@ public class ForumController {
     @GetMapping
     public ModelAndView top(@ModelAttribute("date") ReportForm date) {
         ModelAndView mav = new ModelAndView();
-        //バリデーション③用 Sessionを別の箱に移す
+
+        //バリデーション④用 Sessionを別の箱に移す
         String errorMessage = (String) session.getAttribute("errorMessage");
-        errorMethod(errorMessage, mav);
+        Integer errorId = (Integer) session.getAttribute("errorId");
+        errorMethod(errorMessage, errorId, mav);
+
         // 返信欄用の空のformを準備
         CommentForm commentForm = new CommentForm();
         // 投稿を全件取得
@@ -82,6 +85,18 @@ public class ForumController {
     }
 
     /*
+     * セッション内からエラーメッセージを削除 ③用
+     */
+    public void errorMethod(String errorMessage, Integer errorId, ModelAndView mav){
+        if(errorMessage != null){
+            session.removeAttribute("errorMessage");
+            session.removeAttribute("errorId");
+            mav.addObject("errorMessage", errorMessage);
+            mav.addObject("errorId", errorId);
+        }
+    }
+
+    /*
      * 新規投稿の登録
      */
     @PostMapping("/add")
@@ -125,7 +140,6 @@ public class ForumController {
         //バリデーション②用 Sessionを別の箱に移す
         String errorMessage = (String) session.getAttribute("errorMessage");
         errorMethod(errorMessage, mav);
-
             // 編集する投稿を取得
             ReportForm report = reportService.editReport(id);
             // 編集する投稿を表示するためにセット
@@ -170,6 +184,7 @@ public class ForumController {
             ModelAndView mav = new ModelAndView();
             //sessionに入れる(mavのスコープはrequestと同じ)
             session.setAttribute("errorMessage", "コメントを入力してください");
+            session.setAttribute("errorId", id);
             mav.setViewName("redirect:/");
             return mav;
         }

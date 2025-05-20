@@ -32,23 +32,24 @@ public class CommentService {
      * DBから取得したデータをCommentに設定
      */
     private List<CommentForm> setCommentForm(List<Comment> results) {
-        List<CommentForm> reports = new ArrayList<>();
+        List<CommentForm> comments = new ArrayList<>();
 
         for (int i = 0; i < results.size(); i++) {
-            CommentForm report = new CommentForm();
+            CommentForm comment = new CommentForm();
             Comment result = results.get(i);
-            report.setId(result.getId());
-            report.setText(result.getText());
-            report.setContentId(result.getContentId());
-            report.setCreatedDate(result.getCreatedDate());
-            report.setUpdatedDate(result.getUpdatedDate());
+            comment.setId(result.getId());
+            comment.setText(result.getText());
+            comment.setContentId(result.getContentId());
+            comment.setCreatedDate(result.getCreatedDate());
+            comment.setUpdatedDate(result.getUpdatedDate());
             //時間をDate→String型に変えたverもセットしとく
-            report.setStringCreatedDate(new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(report.getCreatedDate()));
-            report.setStringUpdatedDate(new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(report.getUpdatedDate()));
-            reports.add(report);
+            comment.setStringCreatedDate(new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(comment.getCreatedDate()));
+            comment.setStringUpdatedDate(new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(comment.getUpdatedDate()));
+            comments.add(comment);
         }
-        return reports;
+        return comments;
     }
+
 
     /*
      * 返信の登録、更新

@@ -17,4 +17,5 @@ public class CommentForm {
     private Date updatedDate;
     private String stringCreatedDate;
     private String stringUpdatedDate;
+    private String errorMessage;
 }
