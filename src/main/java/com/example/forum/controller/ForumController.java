@@ -71,6 +71,9 @@ public class ForumController {
         return mav;
     }
 
+    /*
+     * セッション内からエラーメッセージを削除
+     */
     public void errorMethod(String errorMessage, ModelAndView mav){
         if(errorMessage != null){
             session.removeAttribute("errorMessage");
@@ -122,6 +125,7 @@ public class ForumController {
         //バリデーション②用 Sessionを別の箱に移す
         String errorMessage = (String) session.getAttribute("errorMessage");
         errorMethod(errorMessage, mav);
+
             // 編集する投稿を取得
             ReportForm report = reportService.editReport(id);
             // 編集する投稿を表示するためにセット
@@ -164,7 +168,8 @@ public class ForumController {
         //バリデーション③ textが空の時
         if (result.hasErrors()) {
             ModelAndView mav = new ModelAndView();
-            mav.addObject("errorMessage", "コメントを入力してください");
+            //sessionに入れる(mavのスコープはrequestと同じ)
+            session.setAttribute("errorMessage", "コメントを入力してください");
             mav.setViewName("redirect:/");
             return mav;
         }
@@ -223,8 +228,9 @@ public class ForumController {
         //バリデーション④ textが空の時
         if (result.hasErrors()) {
             ModelAndView mav = new ModelAndView();
-            mav.setViewName("/commentEdit/{id}");
-            mav.addObject("errorMessage", "コメントを入力してください");
+            //sessionに入れる(mavのスコープはrequestと同じ)
+            session.setAttribute("errorMessage", "コメントを入力してください");
+            mav.setViewName("redirect:/commentEdit/{id}");
             return mav;
         }
 
@@ -235,7 +241,4 @@ public class ForumController {
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
     }
-
-
-
 }

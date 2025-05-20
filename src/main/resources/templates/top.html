@@ -17,21 +17,24 @@
             ～
             <input type ="date" th:field="*{end}">
             <input type ="submit" value ="絞込">
-            <!--  エラーメッセージある場合  -->
-            <div class="error-message" th:if="${errorMessage != null}">
-                <p th:text="${errorMessage}"></p>
-            </div>
         </form>
     </div>
     <a href="/new">
         <button class="new-button" type="button">新規投稿</button>
     </a>
+    <!--  エラーメッセージある場合  -->
+    <div class="error-message" th:if="${errorMessage != null}">
+        <p th:text="${errorMessage}"></p>
+    </div>
     <div class="message-icon" th:each="content : ${contents}">
         <div>
             投稿ID : <span th:text="${content.id}"/>
         </div>
         <div class="text">
             投稿 : <span th:text="${content.content}"/>
+        </div>
+        <div class="createdDate">
+            投稿日時 : <span th:text="${content.createdDate}"/>
         </div>
         <div class="delete-button">
             <form th:action="@{/delete/{id}(id=${content.id})}" th:method="delete">
