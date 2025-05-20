@@ -32,8 +32,16 @@ button {
     display:inline-block;
 }
 
+.button-delete{
+    background-color: #33FFFF	;
+}
+
 .edit-button{
     display:inline-block;
+}
+
+.button-edit{
+    background-color: #CCFF99;
 }
 
 .comment-delete-button{

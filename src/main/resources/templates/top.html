@@ -34,12 +34,12 @@
         </div>
         <div class="delete-button">
             <form th:action="@{/delete/{id}(id=${content.id})}" th:method="delete">
-                <input type="submit" value="投稿の削除">
+                <input type="submit" value="投稿の削除" class="button-delete">
             </form>
         </div>
         <div class="edit-button">
             <a th:href="@{/edit/{id}(id=${content.id})}">
-                <input type="button" value="投稿の編集">
+                <input type="button" value="投稿の編集" class="button-edit">
             </a>
         </div>
         <div class="comment">
@@ -64,7 +64,7 @@
             <!--返信の一覧表示の繰り返し終わり-->
             <!--  エラーメッセージある場合  -->
             <div class="error-message" th:if="${errorMessage != null and (errorId == content.id)}">
-                <p th:text="${errorMessage}"></p>
+                <p style="color: red" th:text="${errorMessage}"></p>
             </div>
             <div class="comment-insert">
                 <!-- action先に飛ぶのは返信ボタンを押してから→トップ画面時はactionしない→ -->

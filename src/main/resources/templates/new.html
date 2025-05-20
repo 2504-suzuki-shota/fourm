@@ -13,7 +13,7 @@
   <form method="post" action="/add" th:object="${formModel}">
     <!--  エラーメッセージある場合  -->
     <div class="error-message" th:if="${errorMessage != null}">
-      <p th:text="${errorMessage}"></p>
+      <p style="color: red" th:text="${errorMessage}"></p>
     </div>
     <div class="form-area">
       <label>投稿内容</label></br>
